@@ -7,8 +7,7 @@
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; margin: 0; background: #f0f0f0; color: #222; padding-bottom: 80px; }
-  header { background: #305496; color: #fff; padding: 10px 14px; font-size: 15px; font-weight: bold; position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; }
-  header .net { font-size: 11px; font-weight: normal; opacity: 0.9; }
+  header { background: #305496; color: #fff; padding: 10px 14px; font-size: 15px; font-weight: bold; position: sticky; top: 0; z-index: 10; }
   .wrap { padding: 10px; max-width: 500px; margin: 0 auto; }
   .sec { background: #fff; border-radius: 10px; padding: 10px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
   .sec h3 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; color: #666; letter-spacing: 0.5px; }
@@ -20,14 +19,11 @@
   button.t { padding: 12px 6px; font-size: 13px; font-weight: 600; border: 1.5px solid #ccc; border-radius: 8px; background: #fafafa; color: #333; cursor: pointer; transition: all 0.1s; }
   button.t:active { transform: scale(0.96); }
   button.t.on { background: #305496; color: #fff; border-color: #305496; }
-  button.t.p4 { background: #e8f0ff; }
-  button.t.p4.on { background: #305496; color: #fff; }
-  button.t.big { padding: 16px 8px; font-size: 14px; }
   button.num { padding: 14px 4px; font-size: 18px; font-weight: 700; }
   button.ok { background: #1e7e34; color: #fff; border-color: #1e7e34; }
   button.cancel { background: #c0392b; color: #fff; border-color: #c0392b; }
   input.txt { width: 100%; padding: 10px; font-size: 15px; border: 1px solid #ccc; border-radius: 8px; }
-  .display { font-size: 24px; font-weight: bold; text-align: right; padding: 10px 12px; background: #f8f8f8; border-radius: 8px; min-height: 48px; margin-bottom: 8px; overflow-x: auto; }
+  .display { font-size: 24px; font-weight: bold; text-align: right; padding: 10px 12px; background: #f8f8f8; border-radius: 8px; min-height: 48px; margin-bottom: 8px; }
   .display .cur { font-size: 13px; color: #888; margin-right: 4px; }
   .status { position: fixed; bottom: 0; left: 0; right: 0; padding: 10px; font-size: 13px; text-align: center; font-weight: 600; }
   .status.ok { background: #1e7e34; color: #fff; }
@@ -38,14 +34,10 @@
 </head>
 <body>
 
-<header>
-  <div>Kios Input</div>
-  <div class="net" id="status_net">● online</div>
-</header>
+<header>Kios Input</header>
 
 <div class="wrap">
 
-  <!-- Tanggal + produk -->
   <div class="sec">
     <h3>Tanggal</h3>
     <input type="date" id="tanggal" class="txt">
@@ -54,21 +46,20 @@
   <div class="sec">
     <h3>Produk</h3>
     <div class="grid g3" id="grid_produk">
-      <button class="t p4" data-p="P1">P1<br><small>Baut</small></button>
-      <button class="t p4" data-p="P2">P2<br><small>Baut+cat</small></button>
-      <button class="t p4" data-p="P3">P3<br><small>Cat</small></button>
-      <button class="t p4" data-p="P4">P4<br><small>Plat baru</small></button>
-      <button class="t p4" data-p="P5">P5<br><small>Perbaikan</small></button>
-      <button class="t p4" data-p="P6">P6<br><small>Stempel kyu</small></button>
-      <button class="t p4" data-p="P7">P7<br><small>Stempel wrn</small></button>
-      <button class="t p4" data-p="P8">P8<br><small>Vespa</small></button>
-      <button class="t p4" data-p="P9">P9<br><small>Akrilik</small></button>
-      <button class="t p4" data-p="P10">P10<br><small>Aquarium</small></button>
-      <button class="t p4" data-p="-">—<br><small>non-jual</small></button>
+      <button class="t" data-p="P1">P1<br><small>Baut</small></button>
+      <button class="t" data-p="P2">P2<br><small>Baut+cat</small></button>
+      <button class="t" data-p="P3">P3<br><small>Cat</small></button>
+      <button class="t" data-p="P4">P4<br><small>Plat baru</small></button>
+      <button class="t" data-p="P5">P5<br><small>Perbaikan</small></button>
+      <button class="t" data-p="P6">P6<br><small>Stempel kyu</small></button>
+      <button class="t" data-p="P7">P7<br><small>Stempel wrn</small></button>
+      <button class="t" data-p="P8">P8<br><small>Vespa</small></button>
+      <button class="t" data-p="P9">P9<br><small>Akrilik</small></button>
+      <button class="t" data-p="P10">P10<br><small>Aquarium</small></button>
+      <button class="t" data-p="-">—<br><small>non-jual</small></button>
     </div>
   </div>
 
-  <!-- Kategori -->
   <div class="sec">
     <h3>Kategori</h3>
     <div class="grid g3" id="grid_kategori">
@@ -81,7 +72,6 @@
     </div>
   </div>
 
-  <!-- Metode + jenis -->
   <div class="sec">
     <h3>Metode & Jenis</h3>
     <div class="grid g2" style="gap:10px;">
@@ -100,10 +90,9 @@
     </div>
   </div>
 
-  <!-- Nominal keypad -->
   <div class="sec">
     <h3>Nominal</h3>
-    <div class="display" id="display"><span class="cur">Rp</span><span id="nom_display">0</span></div>
+    <div class="display"><span class="cur">Rp</span><span id="nom_display">0</span></div>
     <div class="grid g4" id="keypad">
       <button class="t num" data-n="7">7</button>
       <button class="t num" data-n="8">8</button>
@@ -122,11 +111,10 @@
     </div>
   </div>
 
-  <!-- Keterangan -->
   <div class="sec">
     <h3>Keterangan</h3>
     <input type="text" id="keterangan" class="txt" placeholder="ketik keterangan">
-    <div style="margin-top:6px;" id="chips_ket">
+    <div style="margin-top:6px;">
       <span class="chip" onclick="setKet('jual plat custom')">jual plat</span>
       <span class="chip" onclick="setKet('beli bahan lapisan')">beli lapisan</span>
       <span class="chip" onclick="setKet('beli cat')">beli cat</span>
@@ -137,9 +125,16 @@
     </div>
   </div>
 
-  <!-- Qty -->
   <div class="sec">
-    <h3>Qty (pasang/buah)</h3>
+    <h3>Satuan</h3>
+    <div class="grid g2" id="grid_satuan">
+      <button class="t" data-s="pasang">Pasang</button>
+      <button class="t" data-s="buah">Buah</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h3>Qty</h3>
     <div class="grid g5" id="grid_qty">
       <button class="t" data-q="1">1</button>
       <button class="t" data-q="2">2</button>
@@ -155,7 +150,7 @@
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbz59pVVweQkI8ndHMsi0OOmrz5N7-sz6UlBbtANiJ52RnemsyLVge7Z8i1jbyvjbFRkqA/exec";
-const state = { produk: "", kategori: "Penjualan", metode: "Bank", jenis: "Masuk", nominal: 0, qty: 1 };
+const state = { produk: "", kategori: "Penjualan", metode: "Bank", jenis: "Masuk", nominal: 0, qty: 1, satuan: "pasang" };
 
 function $(id) { return document.getElementById(id); }
 function today() { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); }
@@ -163,7 +158,6 @@ $("tanggal").value = today();
 
 function setKet(s) { $("keterangan").value = s; }
 
-// produk
 document.querySelectorAll("#grid_produk button").forEach(b => {
   b.onclick = () => {
     document.querySelectorAll("#grid_produk button").forEach(x => x.classList.remove("on"));
@@ -171,20 +165,19 @@ document.querySelectorAll("#grid_produk button").forEach(b => {
     state.produk = b.dataset.p;
   };
 });
-// kategori
+
 document.querySelectorAll("#grid_kategori button").forEach(b => {
   b.onclick = () => {
     document.querySelectorAll("#grid_kategori button").forEach(x => x.classList.remove("on"));
     b.classList.add("on");
     state.kategori = b.dataset.k;
-    // auto set jenis
     const keluar = ["Pembelian Stok","Operasional","Gaji","Prive"];
     state.jenis = keluar.includes(b.dataset.k) ? "Keluar" : "Masuk";
-    document.querySelectorAll("#grid_jenis button, [data-j]").forEach(x => x.classList.remove("on"));
-    document.querySelector(`[data-j="${state.jenis}"]`)?.classList.add("on");
+    document.querySelectorAll("[data-j]").forEach(x => x.classList.remove("on"));
+    document.querySelector(`[data-j="${state.jenis}"]`).classList.add("on");
   };
 });
-// metode
+
 document.querySelectorAll("[data-m]").forEach(b => {
   b.onclick = () => {
     document.querySelectorAll("[data-m]").forEach(x => x.classList.remove("on"));
@@ -192,7 +185,7 @@ document.querySelectorAll("[data-m]").forEach(b => {
     state.metode = b.dataset.m;
   };
 });
-// jenis
+
 document.querySelectorAll("[data-j]").forEach(b => {
   b.onclick = () => {
     document.querySelectorAll("[data-j]").forEach(x => x.classList.remove("on"));
@@ -200,7 +193,15 @@ document.querySelectorAll("[data-j]").forEach(b => {
     state.jenis = b.dataset.j;
   };
 });
-// qty
+
+document.querySelectorAll("#grid_satuan button").forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll("#grid_satuan button").forEach(x => x.classList.remove("on"));
+    b.classList.add("on");
+    state.satuan = b.dataset.s;
+  };
+});
+
 document.querySelectorAll("#grid_qty button").forEach(b => {
   b.onclick = () => {
     document.querySelectorAll("#grid_qty button").forEach(x => x.classList.remove("on"));
@@ -208,13 +209,13 @@ document.querySelectorAll("#grid_qty button").forEach(b => {
     state.qty = parseInt(b.dataset.q);
   };
 });
-// default
+
 document.querySelector('[data-k="Penjualan"]').classList.add("on");
 document.querySelector('[data-m="Bank"]').classList.add("on");
 document.querySelector('[data-j="Masuk"]').classList.add("on");
 document.querySelector('[data-q="1"]').classList.add("on");
+document.querySelector('[data-s="pasang"]').classList.add("on");
 
-// keypad
 document.querySelectorAll("#keypad button").forEach(b => {
   b.onclick = () => {
     const n = b.dataset.n;
@@ -232,7 +233,6 @@ async function simpan() {
   if (!ket) { status("Keterangan wajib", false); return; }
   if (!state.produk) { status("Pilih produk", false); return; }
   if (!state.nominal) { status("Nominal kosong", false); return; }
-  if (API_URL.includes("GANTI")) { status("Set API_URL dulu di kode", false); return; }
 
   const t = {
     tanggal: $("tanggal").value,
@@ -242,18 +242,18 @@ async function simpan() {
     metode: state.metode,
     jenis: state.jenis,
     nominal: state.nominal,
-    qty: state.qty
+    qty: state.qty,
+    satuan: state.satuan
   };
 
   status("Mengirim...", true);
   try {
-    const res = await fetch(API_URL, {
+    await fetch(API_URL, {
       method: "POST",
       mode: "no-cors",
       headers: { "Content-Type": "text/plain" },
       body: JSON.stringify(t)
     });
-    // no-cors: tidak bisa baca response. Asumsikan sukses.
     status("✓ Tersimpan: " + ket + " Rp" + state.nominal.toLocaleString("id-ID"), true);
     resetForm();
   } catch (e) {
@@ -262,12 +262,11 @@ async function simpan() {
 }
 
 function resetForm() {
-  state.nominal = 0; state.qty = 1;
+  state.nominal = 0; state.qty = 1; state.produk = "";
   $("nom_display").textContent = "0";
   $("keterangan").value = "";
   document.querySelectorAll("#grid_produk button, #grid_qty button").forEach(x => x.classList.remove("on"));
   document.querySelector('[data-q="1"]').classList.add("on");
-  state.produk = "";
 }
 
 function status(msg, ok) {
