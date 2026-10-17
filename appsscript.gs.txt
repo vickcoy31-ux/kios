@@ -1,0 +1,94 @@
+// appsscript.gs — Kios Backend
+const SHEET_TRANSAKSI = "Transaksi";
+
+function doPost(e) {
+  try {
+    const body = JSON.parse(e.postData.contents);
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const ws = ss.getSheetByName(SHEET_TRANSAKSI);
+
+    const rows = body.transactions || [body];
+    const added = [];
+
+    for (const t of rows) {
+      const r = nextRow(ws);
+      ws.getRange(r, 1).setValue(t.tanggal || "");
+      ws.getRange(r, 2).setValue(t.no_hp || "");
+      ws.getRange(r, 3).setValue(t.keterangan || "");
+      ws.getRange(r, 4).setValue(t.produk || "");
+      ws.getRange(r, 5).setValue(t.kategori || "");
+      ws.getRange(r, 6).setValue(t.metode || "");
+      ws.getRange(r, 7).setValue(t.jenis === "Masuk" ? t.nominal : "");
+      ws.getRange(r, 8).setValue(t.jenis === "Keluar" ? t.nominal : "");
+      ws.getRange(r, 9).setFormula(`=IF(AND(G${r}="",H${r}=""),"",I${r-1}+IF(G${r}="",0,G${r})-IF(H${r}="",0,H${r}))`);
+      ws.getRange(r, 10).setValue((t.tanggal || "").slice(0, 7));
+      ws.getRange(r, 14).setValue(t.qty || 1);
+      added.push(r);
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({
+      ok: true, added: added, count: added.length
+    })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({
+      ok: false, error: err.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet(e) {
+  const action = e.parameter.action || "summary";
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  if (action === "summary") {
+    const ws = ss.getSheetByName("Neraca");
+    const data = {};
+    for (let r = 1; r <= ws.getLastRow(); r++) {
+      const k = ws.getRange(r, 1).getValue();
+      const v = ws.getRange(r, 2).getValue();
+      if (k) data[k] = v;
+    }
+    return json({ ok: true, neraca: data });
+  }
+
+  if (action === "bahan") {
+    const ws = ss.getSheetByName("Bahan");
+    const data = [];
+    for (let r = 5; r <= 10; r++) {
+      const nama = ws.getRange(r, 1).getValue();
+      if (!nama) continue;
+      data.push({
+        nama: nama,
+        satuan: ws.getRange(r, 2).getValue(),
+        stok: ws.getRange(r, 3).getValue(),
+        pakai_bulan: ws.getRange(r, 4).getValue(),
+        sisa_hari: ws.getRange(r, 5).getValue(),
+        status: ws.getRange(r, 13).getValue(),
+        butuh_30hr: ws.getRange(r, 12).getValue()
+      });
+    }
+    return json({ ok: true, bahan: data });
+  }
+
+  if (action === "transaksi") {
+    const ws = ss.getSheetByName("Transaksi");
+    const limit = parseInt(e.parameter.limit || 50);
+    const all = ws.getDataRange().getValues();
+    const head = all[0];
+    const rows = all.slice(1).filter(r => r[0]).slice(-limit).reverse();
+    return json({ ok: true, header: head, rows: rows });
+  }
+
+  return json({ ok: false, error: "action tidak dikenal" });
+}
+
+function json(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function nextRow(ws) {
+  let r = 2;
+  while (ws.getRange(r, 1).getValue() !== "") r++;
+  return r;
+}
