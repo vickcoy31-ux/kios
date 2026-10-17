@@ -1,3 +1,6 @@
+echo "=== index.html ==="
+cat index.html
+=== index.html ===
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -6,11 +9,14 @@
 <title>Kios Input</title>
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; margin: 0; background: #f0f0f0; color: #222; padding-bottom: 80px; }
-  header { background: #305496; color: #fff; padding: 10px 14px; font-size: 15px; font-weight: bold; position: sticky; top: 0; z-index: 10; }
-  .wrap { padding: 10px; max-width: 500px; margin: 0 auto; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; margin: 0; background: #f0f0f0; color: #222; padding-bottom: 100px; }
+  header { background: #305496; color: #fff; padding: 10px 14px; font-size: 15px; font-weight: bold; position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center; }
+  header .nav { font-size: 12px; }
+  header .nav a { color: #cfe0ff; text-decoration: none; margin-left: 10px; }
+  .wrap { padding: 10px; max-width: 520px; margin: 0 auto; }
   .sec { background: #fff; border-radius: 10px; padding: 10px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-  .sec h3 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; color: #666; letter-spacing: 0.5px; }
+  .sec h3 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; color: #666; letter-spacing: 0.5px; display: flex; justify-content: space-between; }
+  .sec h3 .opt { text-transform: none; color: #999; font-weight: normal; font-size: 11px; }
   .grid { display: grid; gap: 6px; }
   .g2 { grid-template-columns: 1fr 1fr; }
   .g3 { grid-template-columns: 1fr 1fr 1fr; }
@@ -22,19 +28,29 @@
   button.num { padding: 14px 4px; font-size: 18px; font-weight: 700; }
   button.ok { background: #1e7e34; color: #fff; border-color: #1e7e34; }
   button.cancel { background: #c0392b; color: #fff; border-color: #c0392b; }
-  input.txt { width: 100%; padding: 10px; font-size: 15px; border: 1px solid #ccc; border-radius: 8px; }
+  input.txt, textarea.txt { width: 100%; padding: 10px; font-size: 15px; border: 1px solid #ccc; border-radius: 8px; font-family: inherit; }
+  textarea.txt { min-height: 50px; resize: vertical; }
   .display { font-size: 24px; font-weight: bold; text-align: right; padding: 10px 12px; background: #f8f8f8; border-radius: 8px; min-height: 48px; margin-bottom: 8px; }
   .display .cur { font-size: 13px; color: #888; margin-right: 4px; }
-  .status { position: fixed; bottom: 0; left: 0; right: 0; padding: 10px; font-size: 13px; text-align: center; font-weight: 600; }
+  .status { position: fixed; bottom: 0; left: 0; right: 0; padding: 10px; font-size: 13px; text-align: center; font-weight: 600; z-index: 100; }
   .status.ok { background: #1e7e34; color: #fff; }
   .status.err { background: #c0392b; color: #fff; }
+  .status.warn { background: #e69500; color: #fff; }
   .status.hide { display: none; }
-  .chip { display: inline-block; padding: 4px 10px; margin: 2px; font-size: 12px; background: #e8f0ff; color: #305496; border-radius: 12px; }
+  .chip { display: inline-block; padding: 4px 10px; margin: 2px; font-size: 12px; background: #e8f0ff; color: #305496; border-radius: 12px; cursor: pointer; }
+  .offline-badge { background: #c0392b; color: #fff; font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+  .online-badge { background: #1e7e34; color: #fff; font-size: 11px; padding: 2px 8px; border-radius: 10px; }
 </style>
 </head>
 <body>
 
-<header>Kios Input</header>
+<header>
+  <div>Kios Input</div>
+  <div class="nav">
+    <span id="net_badge" class="online-badge">online</span>
+    <a href="dashboard.html">Dash</a>
+  </div>
+</header>
 
 <div class="wrap">
 
@@ -75,17 +91,13 @@
   <div class="sec">
     <h3>Metode & Jenis</h3>
     <div class="grid g2" style="gap:10px;">
-      <div>
-        <div class="grid g2">
-          <button class="t" data-m="Cash">Cash</button>
-          <button class="t" data-m="Bank">Bank</button>
-        </div>
+      <div class="grid g2">
+        <button class="t" data-m="Cash">Cash</button>
+        <button class="t" data-m="Bank">Bank</button>
       </div>
-      <div>
-        <div class="grid g2">
-          <button class="t" data-j="Masuk">Masuk</button>
-          <button class="t" data-j="Keluar">Keluar</button>
-        </div>
+      <div class="grid g2">
+        <button class="t" data-j="Masuk">Masuk</button>
+        <button class="t" data-j="Keluar">Keluar</button>
       </div>
     </div>
   </div>
@@ -114,7 +126,7 @@
   <div class="sec">
     <h3>Keterangan</h3>
     <input type="text" id="keterangan" class="txt" placeholder="ketik keterangan">
-    <div style="margin-top:6px;">
+    <div style="margin-top:6px;" id="chips_ket">
       <span class="chip" onclick="setKet('jual plat custom')">jual plat</span>
       <span class="chip" onclick="setKet('beli bahan lapisan')">beli lapisan</span>
       <span class="chip" onclick="setKet('beli cat')">beli cat</span>
@@ -123,6 +135,25 @@
       <span class="chip" onclick="setKet('prive')">prive</span>
       <span class="chip" onclick="setKet('biaya transfer')">biaya tf</span>
     </div>
+  </div>
+
+  <div class="sec">
+    <h3>Detail <span class="opt">(opsional)</span></h3>
+    <div class="grid g2" style="gap:8px;margin-bottom:6px;">
+      <input type="tel" id="no_hp" class="txt" placeholder="No HP 08xxx">
+      <input type="text" id="no_order" class="txt" placeholder="No order">
+    </div>
+    <textarea id="detail" class="txt" placeholder="rincian: plat B 1234 XYZ, putih, dll"></textarea>
+    <input type="text" id="foto" class="txt" placeholder="nama file foto (opsional)" style="margin-top:6px;">
+  </div>
+
+  <div class="sec">
+    <h3>DP / Pesanan <span class="opt">(kalau pesanan DP)</span></h3>
+    <div class="grid g2" style="gap:8px;">
+      <input type="text" id="pelanggan" class="txt" placeholder="Nama pelanggan">
+      <input type="number" id="total_order" class="txt" placeholder="Total order Rp" inputmode="numeric">
+    </div>
+    <div style="margin-top:6px;font-size:12px;color:#666;">Isi Total order jika DP. Nominal di atas = DP. Sisa otomatis masuk Piutang.</div>
   </div>
 
   <div class="sec">
@@ -144,12 +175,19 @@
     </div>
   </div>
 
+  <div class="sec">
+    <h3>Antrian Offline <span class="opt" id="q_count">0</span></h3>
+    <div id="q_list" style="font-size:12px;color:#666;">Tidak ada antrian.</div>
+    <button class="t" style="width:100%;margin-top:8px;" onclick="flushQueue()">Kirim Ulang Antrian</button>
+  </div>
+
 </div>
 
 <div class="status hide" id="status"></div>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbz59pVVweQkI8ndHMsi0OOmrz5N7-sz6UlBbtANiJ52RnemsyLVge7Z8i1jbyvjbFRkqA/exec";
+const QKEY = "kios_queue_v1";
 const state = { produk: "", kategori: "Penjualan", metode: "Bank", jenis: "Masuk", nominal: 0, qty: 1, satuan: "pasang" };
 
 function $(id) { return document.getElementById(id); }
@@ -174,7 +212,7 @@ document.querySelectorAll("#grid_kategori button").forEach(b => {
     const keluar = ["Pembelian Stok","Operasional","Gaji","Prive"];
     state.jenis = keluar.includes(b.dataset.k) ? "Keluar" : "Masuk";
     document.querySelectorAll("[data-j]").forEach(x => x.classList.remove("on"));
-    document.querySelector(`[data-j="${state.jenis}"]`).classList.add("on");
+    document.querySelector('[data-j="' + state.jenis + '"]').classList.add("on");
   };
 });
 
@@ -228,13 +266,10 @@ document.querySelectorAll("#keypad button").forEach(b => {
   };
 });
 
-async function simpan() {
+function buildT() {
   const ket = $("keterangan").value.trim();
-  if (!ket) { status("Keterangan wajib", false); return; }
-  if (!state.produk) { status("Pilih produk", false); return; }
-  if (!state.nominal) { status("Nominal kosong", false); return; }
-
-  const t = {
+  const total = parseInt($("total_order").value) || 0;
+  return {
     tanggal: $("tanggal").value,
     keterangan: ket,
     produk: state.produk,
@@ -243,21 +278,39 @@ async function simpan() {
     jenis: state.jenis,
     nominal: state.nominal,
     qty: state.qty,
-    satuan: state.satuan
+    satuan: state.satuan,
+    no_hp: $("no_hp").value.trim(),
+    no_order: $("no_order").value.trim(),
+    detail: $("detail").value.trim(),
+    foto: $("foto").value.trim(),
+    pelanggan: $("pelanggan").value.trim(),
+    total: total,
+    is_dp: total > state.nominal && total > 0
   };
+}
+
+async function simpan() {
+  const t = buildT();
+  if (!t.keterangan) { status("Keterangan wajib", false); return; }
+  if (!t.produk) { status("Pilih produk", false); return; }
+  if (!t.nominal) { status("Nominal kosong", false); return; }
 
   status("Mengirim...", true);
   try {
     await fetch(API_URL, {
-      method: "POST",
-      mode: "no-cors",
+      method: "POST", mode: "no-cors",
       headers: { "Content-Type": "text/plain" },
       body: JSON.stringify(t)
     });
-    status("✓ Tersimpan: " + ket + " Rp" + state.nominal.toLocaleString("id-ID"), true);
+    status("✓ Tersimpan: " + t.keterangan + " Rp" + t.nominal.toLocaleString("id-ID"), true);
     resetForm();
   } catch (e) {
-    status("Gagal: " + e.message, false);
+    // offline queue
+    const q = getQueue();
+    q.push(t);
+    setQueue(q);
+    status("Offline — masuk antrian (" + q.length + ")", "warn");
+    resetForm();
   }
 }
 
@@ -265,16 +318,57 @@ function resetForm() {
   state.nominal = 0; state.qty = 1; state.produk = "";
   $("nom_display").textContent = "0";
   $("keterangan").value = "";
+  $("no_hp").value = "";
+  $("no_order").value = "";
+  $("detail").value = "";
+  $("foto").value = "";
+  $("pelanggan").value = "";
+  $("total_order").value = "";
   document.querySelectorAll("#grid_produk button, #grid_qty button").forEach(x => x.classList.remove("on"));
   document.querySelector('[data-q="1"]').classList.add("on");
 }
 
 function status(msg, ok) {
   const el = $("status");
-  el.className = "status " + (ok ? "ok" : "err");
+  el.className = "status " + (ok === true ? "ok" : ok === "warn" ? "warn" : "err");
   el.textContent = msg;
-  setTimeout(() => el.classList.add("hide"), 3000);
+  setTimeout(() => el.classList.add("hide"), 4000);
 }
+
+function getQueue() { try { return JSON.parse(localStorage.getItem(QKEY) || "[]"); } catch(e) { return []; } }
+function setQueue(q) { localStorage.setItem(QKEY, JSON.stringify(q)); renderQueue(); }
+
+async function flushQueue() {
+  const q = getQueue();
+  if (!q.length) { status("Antrian kosong", true); return; }
+  status("Mengirim " + q.length + "...", true);
+  const remain = [];
+  for (const t of q) {
+    try {
+      await fetch(API_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(t) });
+    } catch(e) { remain.push(t); }
+  }
+  setQueue(remain);
+  if (!remain.length) status("✓ Semua terkirim", true);
+  else status("Sisa " + remain.length + " masih gagal", "warn");
+}
+
+function renderQueue() {
+  const q = getQueue();
+  $("q_count").textContent = q.length;
+  if (!q.length) { $("q_list").textContent = "Tidak ada antrian."; return; }
+  $("q_list").innerHTML = q.map((t,i) => (i+1) + ". " + t.keterangan + " — Rp" + t.nominal.toLocaleString("id-ID")).join("<br>");
+}
+
+function updateNet() {
+  const b = $("net_badge");
+  if (navigator.onLine) { b.className = "online-badge"; b.textContent = "online"; }
+  else { b.className = "offline-badge"; b.textContent = "offline"; }
+}
+window.addEventListener("online", () => { updateNet(); flushQueue(); });
+window.addEventListener("offline", updateNet);
+updateNet();
+renderQueue();
 </script>
 
 </body>
