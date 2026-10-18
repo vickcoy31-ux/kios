@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Kios HP</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; margin: 0; background: #f0f0f0; color: #222; padding-bottom: 90px; }
+  header { background: #305496; color: #fff; padding: 10px 14px; font-size: 15px; font-weight: bold; position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center; }
+  header .badge { font-size: 11px; background: #1e7e34; padding: 2px 8px; border-radius: 10px; }
+  .wrap { padding: 8px; max-width: 520px; margin: 0 auto; }
+  .sec { background: #fff; border-radius: 10px; padding: 8px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .sec h3 { margin: 0 0 6px; font-size: 11px; text-transform: uppercase; color: #666; letter-spacing: 0.5px; }
+  .grid { display: grid; gap: 4px; }
+  .g3 { grid-template-columns: repeat(3, 1fr); }
+  .g4 { grid-template-columns: repeat(4, 1fr); }
+  .g6 { grid-template-columns: repeat(6, 1fr); }
+  button.t { padding: 10px 4px; font-size: 12px; font-weight: 600; border: 1.5px solid #ccc; border-radius: 6px; background: #fafafa; color: #333; cursor: pointer; }
+  button.t:active { transform: scale(0.96); }
+  button.t.on { background: #305496; color: #fff; border-color: #305496; }
+  button.t small { display: block; font-weight: normal; font-size: 10px; opacity: 0.8; }
+  .display { font-size: 28px; font-weight: bold; text-align: right; padding: 10px 12px; background: #f8f8f8; border-radius: 8px; margin-bottom: 6px; }
+  .display .cur { font-size: 13px; color: #888; margin-right: 4px; }
+  input.txt, textarea.txt { width: 100%; padding: 10px; font-size: 15px; border: 1px solid #ccc; border-radius: 8px; font-family: inherit; }
+  textarea.txt { min-height: 44px; resize: vertical; }
+  .status { position: fixed; bottom: 0; left: 0; right: 0; padding: 10px; font-size: 13px; text-align: center; font-weight: 600; z-index: 100; }
+  .status.ok { background: #1e7e34; color: #fff; }
+  .status.err { background: #c0392b; color: #fff; }
+  .status.warn { background: #e69500; color: #fff; }
+  .status.hide { display: none; }
+  .chip { display: inline-block; padding: 4px 8px; margin: 2px; font-size: 11px; background: #e8f0ff; color: #305496; border-radius: 10px; cursor: pointer; }
+  .counter { font-size: 11px; color: #666; margin-top: 4px; }
+  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
+  .actions button { padding: 10px; font-size: 12px; font-weight: 600; border-radius: 8px; border: none; cursor: pointer; }
+  .actions .primary { background: #1e7e34; color: #fff; }
+  .actions .warn { background: #e69500; color: #fff; }
+  .actions .danger { background: #c0392b; color: #fff; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>Kios HP</div>
+  <div class="badge" id="count_badge">0</div>
+</header>
+
+<div class="wrap">
+
+  <div class="sec">
+    <h3>Tanggal</h3>
+    <input type="date" id="tanggal" class="txt">
+  </div>
+
+  <div class="sec">
+    <h3>Produk</h3>
+    <div class="grid g4" id="grid_produk">
+      <button class="t" data-p="P1">P1<small>Baut</small></button>
+      <button class="t" data-p="P2">P2<small>Baut+cat</small></button>
+      <button class="t" data-p="P3">P3<small>Cat</small></button>
+      <button class="t" data-p="P4">P4<small>Plat baru</small></button>
+      <button class="t" data-p="P5">P5<small>Perbaikan</small></button>
+      <button class="t" data-p="P6">P6<small>Stempel kyu</small></button>
+      <button class="t" data-p="P7">P7<small>Stempel wrn</small></button>
+      <button class="t" data-p="P8">P8<small>Vespa</small></button>
+      <button class="t" data-p="P9">P9<small>Akrilik</small></button>
+      <button class="t" data-p="P10">P10<small>Aquarium</small></button>
+      <button class="t" data-p="-">—<small>non-jual</small></button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h3>Kategori</h3>
+    <div class="grid g3" id="grid_kategori">
+      <button class="t" data-k="Penjualan">Jual</button>
+      <button class="t" data-k="Pendapatan Lain">Pendapatan</button>
+      <button class="t" data-k="Pembelian Stok">Beli stok</button>
+      <button class="t" data-k="Operasional">Operasional</button>
+      <button class="t" data-k="Gaji">Gaji</button>
+      <button class="t" data-k="Prive">Prive</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h3>Metode / Jenis</h3>
+    <div class="grid g4" id="grid_mj">
+      <button class="t" data-m="Cash">Cash</button>
+      <button class="t" data-m="Bank">Bank</button>
+      <button class="t" data-j="Masuk">Masuk</button>
+      <button class="t" data-j="Keluar">Keluar</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h3>Nominal</h3>
+    <div class="display"><span class="cur">Rp</span><span id="nom_display">0</span></div>
+    <div class="grid g4" id="keypad">
+      <button class="t" data-n="7">7</button>
+      <button class="t" data-n="8">8</button>
+      <button class="t" data-n="9">9</button>
+      <button class="t" data-n="del" style="background:#f5c6c6">⌫</button>
+      <button class="t" data-n="4">4</button>
+      <button class="t" data-n="5">5</button>
+      <button class="t" data-n="6">6</button>
+      <button class="t" data-n="clr" style="background:#f5c6c6">C</button>
+      <button class="t" data-n="1">1</button>
+      <button class="t" data-n="2">2</button>
+      <button class="t" data-n="3">3</button>
+      <button class="t" data-n="000">000</button>
+      <button class="t" data-n="0" style="grid-column: span 4;">0</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h3>Keterangan</h3>
+    <input type="text" id="keterangan" class="txt" placeholder="ketik atau pilih">
+    <div>
+      <span class="chip" onclick="setKet('jual plat custom')">jual plat</span>
+      <span class="chip" onclick="setKet('beli lapisan')">beli lapisan</span>
+      <span class="chip" onclick="setKet('beli cat')">beli cat</span>
+      <span class="chip" onclick="setKet('beli mur')">beli mur</span>
+      <span class="chip" onclick="setKet('sewa tempat')">sewa</span>
+      <span class="chip" onclick="setKet('prive')">prive</span>
+      <span class="chip" onclick="setKet('biaya tf')">biaya tf</span>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h3>Satuan & Qty</h3>
+    <div class="grid g6" id="grid_satuan" style="margin-bottom:4px;">
+      <button class="t" data-s="pasang">pasang</button>
+      <button class="t" data-s="buah">buah</button>
+      <button class="t" data-s="lembar">lembar</button>
+      <button class="t" data-s="kaleng">kaleng</button>
+      <button class="t" data-s="meter">meter</button>
+      <button class="t" data-s="biji">biji</button>
+    </div>
+    <div class="grid g6" id="grid_qty">
+      <button class="t" data-q="1">1</button>
+      <button class="t" data-q="2">2</button>
+      <button class="t" data-q="3">3</button>
+      <button class="t" data-q="4">4</button>
+      <button class="t" data-q="5">5</button>
+      <button class="t" data-q="custom" onclick="qtyCustom()">+</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h3>Detail <small style="color:#999;">(opsional)</small></h3>
+    <div class="grid g3" style="margin-bottom:4px;">
+      <input type="tel" id="no_hp" class="txt" placeholder="HP">
+      <input type="text" id="no_order" class="txt" placeholder="Order">
+      <input type="text" id="plat" class="txt" placeholder="Plat">
+    </div>
+    <textarea id="detail" class="txt" placeholder="rincian"></textarea>
+  </div>
+
+  <div class="sec">
+    <h3>DP / Pesanan <small style="color:#999;">(opsional)</small></h3>
+    <div class="grid g3">
+      <input type="text" id="pelanggan" class="txt" placeholder="Nama">
+      <input type="number" id="total_order" class="txt" placeholder="Total" inputmode="numeric">
+      <input type="text" id="foto" class="txt" placeholder="Foto">
+    </div>
+  </div>
+
+  <button class="t on" style="width:100%;padding:14px;font-size:15px;margin-bottom:8px;" onclick="simpan()">SIMPAN</button>
+
+  <div class="sec">
+    <h3>Data Tersimpan <span style="float:right;font-weight:normal;color:#999;" id="total_display"></span></h3>
+    <div class="counter" id="count_text">0 transaksi</div>
+    <div class="actions">
+      <button class="primary" onclick="exportJSON()">Export JSON</button>
+      <button class="warn" onclick="exportCSV()">Export CSV</button>
+      <button class="danger" onclick="hapusSemua()">Hapus Semua</button>
+      <button onclick="previewData()">Lihat Data</button>
+    </div>
+  </div>
+
+  <div class="sec" id="preview" style="display:none;">
+    <h3>Preview</h3>
+    <div id="preview_content" style="font-size:12px;"></div>
+  </div>
+
+</div>
+
+<div class="status hide" id="status"></div>
+
+<script>
+const KEY = "kios_hp_queue_v1";
+const state = { produk:"", kategori:"Penjualan", metode:"Cash", jenis:"Masuk", nominal:0, qty:1, satuan:"pasang" };
+
+function $(id){ return document.getElementById(id); }
+function today(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+$("tanggal").value = today();
+
+function setKet(s){ $("keterangan").value = s; }
+function qtyCustom(){ const v = prompt("Qty:"); if(v && parseInt(v) > 0){ state.qty = parseInt(v); renderQty(); } }
+
+function renderQty(){
+  document.querySelectorAll("#grid_qty button").forEach(b => {
+    if(b.dataset.q === "custom") return;
+    b.classList.toggle("on", parseInt(b.dataset.q) === state.qty);
+  });
+}
+
+document.querySelectorAll("#grid_produk button").forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll("#grid_produk button").forEach(x => x.classList.remove("on"));
+    b.classList.add("on");
+    state.produk = b.dataset.p === "-" ? "" : b.dataset.p;
+  };
+});
+
+document.querySelectorAll("#grid_kategori button").forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll("#grid_kategori button").forEach(x => x.classList.remove("on"));
+    b.classList.add("on");
+    state.kategori = b.dataset.k;
+    const keluar = ["Pembelian Stok","Operasional","Gaji","Prive"];
+    state.jenis = keluar.includes(b.dataset.k) ? "Keluar" : "Masuk";
+    document.querySelectorAll("[data-j]").forEach(x => x.classList.remove("on"));
+    document.querySelector('[data-j="' + state.jenis + '"]').classList.add("on");
+  };
+});
+
+document.querySelectorAll("[data-m]").forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll("[data-m]").forEach(x => x.classList.remove("on"));
+    b.classList.add("on");
+    state.metode = b.dataset.m;
+  };
+});
+
+document.querySelectorAll("[data-j]").forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll("[data-j]").forEach(x => x.classList.remove("on"));
+    b.classList.add("on");
+    state.jenis = b.dataset.j;
+  };
+});
+
+document.querySelectorAll("#grid_satuan button").forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll("#grid_satuan button").forEach(x => x.classList.remove("on"));
+    b.classList.add("on");
+    state.satuan = b.dataset.s;
+  };
+});
+
+document.querySelectorAll("#grid_qty button").forEach(b => {
+  if(b.dataset.q === "custom") return;
+  b.onclick = () => {
+    document.querySelectorAll("#grid_qty button").forEach(x => x.classList.remove("on"));
+    b.classList.add("on");
+    state.qty = parseInt(b.dataset.q);
+  };
+});
+
+document.querySelector('[data-k="Penjualan"]').classList.add("on");
+document.querySelector('[data-m="Cash"]').classList.add("on");
+document.querySelector('[data-j="Masuk"]').classList.add("on");
+document.querySelector('[data-s="pasang"]').classList.add("on");
+document.querySelector('[data-q="1"]').classList.add("on");
+
+document.querySelectorAll("#keypad button").forEach(b => {
+  b.onclick = () => {
+    const n = b.dataset.n;
+    if(n === "del") state.nominal = Math.floor(state.nominal / 10);
+    else if(n === "clr") state.nominal = 0;
+    else if(n === "000") state.nominal = state.nominal * 1000;
+    else state.nominal = state.nominal * 10 + parseInt(n);
+    if(state.nominal > 99999999) state.nominal = 99999999;
+    $("nom_display").textContent = state.nominal.toLocaleString("id-ID");
+  };
+});
+
+function simpan(){
+  const ket = $("keterangan").value.trim();
+  if(!ket){ status("Keterangan wajib", "err"); return; }
+  if(!state.produk && state.kategori === "Penjualan"){ status("Pilih produk", "err"); return; }
+  if(!state.nominal){ status("Nominal kosong", "err"); return; }
+
+  const total = parseInt($("total_order").value) || 0;
+  const t = {
+    tanggal: $("tanggal").value,
+    keterangan: ket,
+    produk: state.produk,
+    kategori: state.kategori,
+    metode: state.metode,
+    jenis: state.jenis,
+    nominal: state.nominal,
+    qty: state.qty,
+    satuan: state.satuan,
+    no_hp: $("no_hp").value.trim(),
+    no_order: $("no_order").value.trim(),
+    detail: $("detail").value.trim(),
+    plat: $("plat").value.trim(),
+    foto: $("foto").value.trim(),
+    pelanggan: $("pelanggan").value.trim(),
+    total_order: total,
+    is_dp: total > state.nominal && total > 0,
+    created: new Date().toISOString()
+  };
+
+  const data = load();
+  data.push(t);
+  save(data);
+  status("✓ Tersimpan: " + ket + " Rp" + state.nominal.toLocaleString("id-ID"), "ok");
+  resetForm();
+}
+
+function resetForm(){
+  state.nominal = 0;
+  state.qty = 1;
+  state.produk = "";
+  $("nom_display").textContent = "0";
+  $("keterangan").value = "";
+  $("no_hp").value = "";
+  $("no_order").value = "";
+  $("plat").value = "";
+  $("detail").value = "";
+  $("foto").value = "";
+  $("pelanggan").value = "";
+  $("total_order").value = "";
+  document.querySelectorAll("#grid_produk button, #grid_qty button").forEach(x => x.classList.remove("on"));
+  document.querySelector('[data-q="1"]').classList.add("on");
+  renderCounter();
+}
+
+function load(){
+  try { return JSON.parse(localStorage.getItem(KEY) || "[]"); }
+  catch(e){ return []; }
+}
+
+function save(data){
+  localStorage.setItem(KEY, JSON.stringify(data));
+  renderCounter();
+}
+
+function renderCounter(){
+  const data = load();
+  $("count_badge").textContent = data.length;
+  $("count_text").textContent = data.length + " transaksi tersimpan";
+  let totalMasuk = 0, totalKeluar = 0;
+  for(const t of data){
+    if(t.jenis === "Masuk") totalMasuk += t.nominal;
+    else totalKeluar += t.nominal;
+  }
+  $("total_display").textContent = "▼" + totalMasuk.toLocaleString("id-ID") + " ▲" + totalKeluar.toLocaleString("id-ID");
+}
+
+function exportJSON(){
+  const data = load();
+  if(!data.length){ status("Tidak ada data", "err"); return; }
+  const out = {
+    version: 1,
+    exported_at: new Date().toISOString(),
+    device: "kios-hp",
+    transactions: data
+  };
+  const blob = new Blob([JSON.stringify(out, null, 2)], { type: "application/json" });
+  const nama = "kios_hp_" + today() + "_" + Date.now() + ".json";
+  downloadBlob(blob, nama);
+  status("Download " + nama, "ok");
+}
+
+function exportCSV(){
+  const data = load();
+  if(!data.length){ status("Tidak ada data", "err"); return; }
+  const header = ["tanggal","no_order","keterangan","produk","kategori","metode","jenis","nominal","no_hp","detail","plat","foto","qty","satuan","pelanggan","total_order","is_dp"];
+  const lines = [header.join(",")];
+  for(const t of data){
+    const row = header.map(h => {
+      const v = String(t[h] == null ? "" : t[h]);
+      return v.includes(",") || v.includes('"') || v.includes("\n") ? '"' + v.replace(/"/g,'""') + '"' : v;
+    });
+    lines.push(row.join(","));
+  }
+  const blob = new Blob([lines.join("\n")], { type: "text/csv" });
+  downloadBlob(blob, "kios_hp_" + today() + ".csv");
+  status("CSV didownload", "ok");
+}
+
+function downloadBlob(blob, nama){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = nama;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function hapusSemua(){
+  if(!confirm("Hapus semua transaksi di HP ini?\nPastikan sudah export JSON!")) return;
+  save([]);
+  status("Semua data dihapus", "ok");
+  $("preview").style.display = "none";
+}
+
+function previewData(){
+  const data = load();
+  const el = $("preview_content");
+  if(!data.length){ el.textContent = "Belum ada data."; $("preview").style.display = "block"; return; }
+  el.innerHTML = data.slice().reverse().map((t,i) => {
+    const j = t.jenis === "Masuk" ? "▼" : "▲";
+    return `<div style="padding:6px 0;border-bottom:1px solid #eee;">
+      <b>${t.tanggal}</b> ${t.keterangan} ${j} Rp${(t.nominal||0).toLocaleString("id-ID")}<br>
+      <span style="color:#666;">${t.produk||"-"} · ${t.kategori} · ${t.metode} · ${t.qty} ${t.satuan}</span>
+    </div>`;
+  }).join("");
+  $("preview").style.display = "block";
+}
+
+function status(msg, cls){
+  const el = $("status");
+  el.className = "status " + cls;
+  el.textContent = msg;
+  setTimeout(() => el.classList.add("hide"), 3000);
+}
+
+renderCounter();
+</script>
+
+</body>
+</html>
