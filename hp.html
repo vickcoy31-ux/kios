@@ -370,15 +370,43 @@ async function simpan(){
   save(data);
 
   status("Mengirim ke Sheets...", "warn");
-  try {
-    await fetch(API_URL, { method:"POST", mode:"no-cors", headers:{ "Content-Type":"text/plain" }, body: JSON.stringify(t) });
-    status("✓ Tersimpan: " + ket + " Rp" + state.nominal.toLocaleString("id-ID"), "ok");
+  const ok = await kirimKeSheets(t);
+  if (ok) {
+    status("✓ Terkirim ke Sheets: " + ket + " Rp" + state.nominal.toLocaleString("id-ID"), "ok");
     resetForm();
     loadAll();
-  } catch(e) {
+  } else {
     const q = getPending(); q.push(t); setPending(q);
-    status("Offline — antrian (" + q.length + ")", "warn");
+    status("Gagal kirim — masuk antrian (" + q.length + "). Cek koneksi, lalu tap Kirim Tertunda.", "err");
     resetForm();
+  }
+}
+
+async function kirimKeSheets(t) {
+  try {
+    await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(t)
+    });
+  } catch(e) {
+    console.warn("fetch gagal:", e);
+    return false;
+  }
+  // verifikasi: tunggu 1.5 detik, cek apakah transaksi terakhir = yang barusan
+  await new Promise(r => setTimeout(r, 1500));
+  try {
+    const r = await fetch(API_URL + "?action=transaksi&limit=1&_=" + Date.now());
+    const j = await r.json();
+    const rows = j.rows || [];
+    if (!rows.length) return false;
+    const last = rows[0];
+    const sama = (last.keterangan || "") === (t.keterangan || "")
+              && Math.abs((last.masuk || last.keluar || 0) - (t.nominal || 0)) < 1;
+    return sama;
+  } catch(e) {
+    console.warn("verifikasi gagal:", e);
+    return false;
   }
 }
 
@@ -410,12 +438,12 @@ async function flushPending(){
   status("Mengirim " + q.length + "...", "warn");
   const remain = [];
   for(const t of q){
-    try { await fetch(API_URL, { method:"POST", mode:"no-cors", headers:{ "Content-Type":"text/plain" }, body: JSON.stringify(t) }); }
-    catch(e) { remain.push(t); }
+    const ok = await kirimKeSheets(t);
+    if(!ok) remain.push(t);
   }
   setPending(remain);
-  if(!remain.length) status("✓ Semua terkirim", "ok");
-  else status("Sisa " + remain.length + " gagal", "err");
+  if(!remain.length) status("✓ Semua terkirim ke Sheets", "ok");
+  else status("Sisa " + remain.length + " gagal. Cek koneksi.", "err");
   loadAll();
 }
 
