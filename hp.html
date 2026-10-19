@@ -58,6 +58,9 @@
   .item .nm { font-weight: bold; font-size: 13px; }
   .item .det { font-size: 11px; color: #666; margin-top: 2px; }
   .empty { text-align: center; color: #888; padding: 20px; font-size: 13px; }
+  .menu-item { display:block;width:100%;text-align:left;background:#fff;color:#222;border:none;border-bottom:1px solid #f0f0f0;padding:14px 20px;font-size:14px;font-weight:600;cursor:pointer; }
+  .menu-item.on { background:#e8f0ff;color:#305496;border-left:4px solid #305496;padding-left:16px; }
+  .menu-item:hover { background:#f5f8ff; }
   .refresh { text-align: center; margin: 8px 0; }
   .refresh button { padding: 8px 20px; font-size: 13px; font-weight: bold; background: #305496; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
 </style>
@@ -65,7 +68,10 @@
 <body>
 
 <header>
-  <div>Kios</div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button onclick="toggleMenu()" style="background:transparent;border:none;color:#fff;font-size:22px;padding:0 8px;cursor:pointer;">≡</button>
+    <span>Kios</span>
+  </div>
   <div style="display:flex;gap:8px;align-items:center;">
     <span style="font-size:11px;background:#2e7d32;padding:2px 6px;border-radius:6px;" id="saldo_bank">B: -</span>
     <span style="font-size:11px;background:#e69500;padding:2px 6px;border-radius:6px;" id="saldo_cash">C: -</span>
@@ -73,15 +79,17 @@
   </div>
 </header>
 
-<div class="tabs">
-  <button data-tab="input" class="on">Input</button>
-  <button data-tab="neraca">Neraca</button>
-  <button data-tab="bahan">Bahan</button>
-  <button data-tab="piutang">Piutang</button>
-  <button data-tab="labarugi">Laba</button>
-  <button data-tab="aruskas">Arus</button>
-  <button data-tab="rekap">Rekap</button>
-  <button data-tab="riwayat">Riwayat</button>
+<div id="menu_overlay" onclick="toggleMenu()" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:50;"></div>
+<div id="side_menu" style="position:fixed;top:0;right:-260px;width:250px;height:100vh;background:#fff;box-shadow:-2px 0 8px rgba(0,0,0,0.2);z-index:51;transition:right 0.25s;padding:20px 0;overflow-y:auto;">
+  <div style="padding:0 20px 12px;font-weight:bold;font-size:16px;color:#305496;border-bottom:1px solid #eee;">Menu</div>
+  <button class="menu-item on" data-tab="input" onclick="pilihTab('input')">Input</button>
+  <button class="menu-item" data-tab="neraca" onclick="pilihTab('neraca')">Neraca</button>
+  <button class="menu-item" data-tab="bahan" onclick="pilihTab('bahan')">Bahan</button>
+  <button class="menu-item" data-tab="piutang" onclick="pilihTab('piutang')">Piutang</button>
+  <button class="menu-item" data-tab="labarugi" onclick="pilihTab('labarugi')">Laba Rugi</button>
+  <button class="menu-item" data-tab="aruskas" onclick="pilihTab('aruskas')">Arus Kas</button>
+  <button class="menu-item" data-tab="rekap" onclick="pilihTab('rekap')">Rekap Produk</button>
+  <button class="menu-item" data-tab="riwayat" onclick="pilihTab('riwayat')">Riwayat</button>
 </div>
 
 <div class="wrap">
@@ -504,15 +512,27 @@ function status(msg, cls){
 }
 
 // ===== Tab logic =====
-document.querySelectorAll(".tabs button").forEach(b => {
-  b.onclick = () => {
-    document.querySelectorAll(".tabs button").forEach(x => x.classList.remove("on"));
-    b.classList.add("on");
-    document.querySelectorAll(".pane").forEach(p => p.classList.remove("on"));
-    document.getElementById("pane-" + b.dataset.tab).classList.add("on");
-    if(b.dataset.tab !== "input") loadTab(b.dataset.tab);
-  };
-});
+function toggleMenu(){
+  const menu = document.getElementById("side_menu");
+  const overlay = document.getElementById("menu_overlay");
+  const isOpen = menu.style.right === "0px";
+  if(isOpen){
+    menu.style.right = "-260px";
+    overlay.style.display = "none";
+  } else {
+    menu.style.right = "0px";
+    overlay.style.display = "block";
+  }
+}
+
+function pilihTab(tab){
+  document.querySelectorAll(".menu-item").forEach(x => x.classList.remove("on"));
+  document.querySelector('.menu-item[data-tab="' + tab + '"]').classList.add("on");
+  document.querySelectorAll(".pane").forEach(p => p.classList.remove("on"));
+  document.getElementById("pane-" + tab).classList.add("on");
+  toggleMenu();
+  if(tab !== "input") loadTab(tab);
+}
 
 async function api(params){ const r = await fetch(API_URL + "?" + params); return await r.json(); }
 
