@@ -632,7 +632,6 @@ async function loadRiwayat(){
     if(!arr.length){ el.innerHTML = '<div class="empty">Belum ada transaksi.</div>'; return; }
     for(const t of arr){ const jenis = (t.masuk > 0) ? "▼" : "▲"; const nom = (t.masuk > 0) ? t.masuk : t.keluar; const rowNum = t.row && typeof t.row === "number" ? t.row : null;
       const it = document.createElement("div"); it.className = "item";
-      const rowNum = (t.row && typeof t.row === "number") ? t.row : null;
       it.innerHTML = '<div class="nm">' + (t.keterangan||"-") + ' <span style="color:#b00;">' + jenis + ' ' + fmt(nom) + '</span></div><div class="det">' + fmtTgl(t.tanggal) + ' · ' + (t.produk||"-") + ' · ' + (t.kategori||"") + ' · ' + (t.metode||"") + ' · qty ' + (t.qty||1) + ' ' + (t.satuan||"") + '</div>' + (t.no_hp ? '<div class="det">HP ' + t.no_hp + '</div>' : '') + (t.detail ? '<div class="det">' + t.detail + '</div>' : '') + (rowNum ? '<button style="margin-top:4px;padding:4px 10px;font-size:11px;background:#c0392b;color:#fff;border:none;border-radius:6px;" onclick="hapusRow(' + rowNum + ')">Hapus</button>' : '');
       el.appendChild(it);
     }
