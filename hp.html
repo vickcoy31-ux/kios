@@ -66,7 +66,11 @@
 
 <header>
   <div>Kios</div>
-  <div><span class="badge" id="net_badge">online</span></div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <span style="font-size:11px;background:#2e7d32;padding:2px 6px;border-radius:6px;" id="saldo_bank">B: -</span>
+    <span style="font-size:11px;background:#e69500;padding:2px 6px;border-radius:6px;" id="saldo_cash">C: -</span>
+    <span class="badge" id="net_badge">online</span>
+  </div>
 </header>
 
 <div class="tabs">
@@ -172,11 +176,11 @@
         <button class="t" data-s="biji">biji</button>
       </div>
       <div class="grid g6" id="grid_qty">
+        <button class="t" data-q="0">-</button>
         <button class="t" data-q="1">1</button>
         <button class="t" data-q="2">2</button>
         <button class="t" data-q="3">3</button>
         <button class="t" data-q="4">4</button>
-        <button class="t" data-q="5">5</button>
         <button class="t" onclick="qtyCustom()">+</button>
       </div>
     </div>
@@ -316,6 +320,9 @@ document.querySelectorAll("#grid_qty button[data-q]").forEach(b => {
     document.querySelectorAll("#grid_qty button").forEach(x => x.classList.remove("on"));
     b.classList.add("on");
     state.qty = parseInt(b.dataset.q);
+    // sembunyikan satuan kalau qty 0
+    const sat = document.getElementById("grid_satuan");
+    if (sat) sat.style.display = state.qty === 0 ? "none" : "";
   };
 });
 document.querySelector('[data-k="Penjualan"]').classList.add("on");
@@ -375,6 +382,7 @@ async function simpan(){
     status("✓ Terkirim ke Sheets: " + ket + " Rp" + state.nominal.toLocaleString("id-ID"), "ok");
     resetForm();
     loadAll();
+    updateSaldo();
   } else {
     const q = getPending(); q.push(t); setPending(q);
     status("Gagal kirim — masuk antrian (" + q.length + "). Cek koneksi, lalu tap Kirim Tertunda.", "err");
@@ -521,6 +529,17 @@ function fmt(v){ if(v == null || v === "") return "-"; if(typeof v === "number")
 function fmtNum(v){ if(v == null || v === "") return "-"; return parseFloat(v).toFixed(2); }
 function fmtTgl(v){ if(!v) return "-"; if(typeof v === "string") return v.slice(0,10); try{ const d=new Date(v); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }catch(e){ return String(v); } }
 
+async function updateSaldo(){
+  try {
+    const j = await api("action=summary");
+    const d = j.neraca || {};
+    const bank = d["Bank"] || 0;
+    const kas = d["Kas (Cash)"] || 0;
+    $("saldo_bank").textContent = "B: Rp" + Number(bank).toLocaleString("id-ID");
+    $("saldo_cash").textContent = "C: Rp" + Number(kas).toLocaleString("id-ID");
+  } catch(e) { console.warn("updateSaldo:", e); }
+}
+
 async function loadNeraca(){
   try { const j = await api("action=summary"); const d = j.neraca || {}; const el = $("neraca"); el.innerHTML = "";
     for(const k of Object.keys(d)){ if(k === "Pos" || k.startsWith("Neraca Sederhana")) continue;
@@ -605,6 +624,7 @@ updateNet();
 
 renderCounter();
 renderPending();
+updateSaldo();
 </script>
 
 </body>
