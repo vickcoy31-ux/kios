@@ -606,12 +606,34 @@ async function loadRekap(){
   } catch(e) { $("rekap").innerHTML = '<div class="empty">Error: ' + e.message + '</div>'; }
 }
 
+async function hapusRow(rowNum){
+  if (!confirm("Hapus transaksi baris " + rowNum + " dari Sheets?")) return;
+  try {
+    const r = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "delete", row: rowNum })
+    });
+    const j = await r.json();
+    if (j.ok) {
+      status("✓ Baris " + rowNum + " dihapus", "ok");
+      loadRiwayat();
+      updateSaldo();
+    } else {
+      status("Gagal: " + (j.error || "unknown"), "err");
+    }
+  } catch(e) {
+    status("Error: " + e.message, "err");
+  }
+}
+
 async function loadRiwayat(){
   try { const j = await api("action=transaksi&limit=30"); const arr = j.rows || []; const el = $("riwayat"); el.innerHTML = "";
     if(!arr.length){ el.innerHTML = '<div class="empty">Belum ada transaksi.</div>'; return; }
-    for(const t of arr){ const jenis = (t.masuk > 0) ? "▼" : "▲"; const nom = (t.masuk > 0) ? t.masuk : t.keluar;
+    for(const t of arr){ const jenis = (t.masuk > 0) ? "▼" : "▲"; const nom = (t.masuk > 0) ? t.masuk : t.keluar; const rowNum = t.row && typeof t.row === "number" ? t.row : null;
       const it = document.createElement("div"); it.className = "item";
-      it.innerHTML = '<div class="nm">' + (t.keterangan||"-") + ' <span style="color:#b00;">' + jenis + ' ' + fmt(nom) + '</span></div><div class="det">' + fmtTgl(t.tanggal) + ' · ' + (t.produk||"-") + ' · ' + (t.kategori||"") + ' · ' + (t.metode||"") + ' · qty ' + (t.qty||1) + ' ' + (t.satuan||"") + '</div>' + (t.no_hp ? '<div class="det">HP ' + t.no_hp + '</div>' : '') + (t.detail ? '<div class="det">' + t.detail + '</div>' : '');
+      const rowNum = (t.row && typeof t.row === "number") ? t.row : null;
+      it.innerHTML = '<div class="nm">' + (t.keterangan||"-") + ' <span style="color:#b00;">' + jenis + ' ' + fmt(nom) + '</span></div><div class="det">' + fmtTgl(t.tanggal) + ' · ' + (t.produk||"-") + ' · ' + (t.kategori||"") + ' · ' + (t.metode||"") + ' · qty ' + (t.qty||1) + ' ' + (t.satuan||"") + '</div>' + (t.no_hp ? '<div class="det">HP ' + t.no_hp + '</div>' : '') + (t.detail ? '<div class="det">' + t.detail + '</div>' : '') + (rowNum ? '<button style="margin-top:4px;padding:4px 10px;font-size:11px;background:#c0392b;color:#fff;border:none;border-radius:6px;" onclick="hapusRow(' + rowNum + ')">Hapus</button>' : '');
       el.appendChild(it);
     }
   } catch(e) { $("riwayat").innerHTML = '<div class="empty">Error: ' + e.message + '</div>'; }
